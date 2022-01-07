@@ -1,6 +1,13 @@
-# Sparrow Lending
-[Sparrow Lending] (https://www.sparrowfi.com/) is a unique peer-to-peer Palo-Alto based lending company that seeks to help college students acquire loans and bypass general institutions like banks and private companies. Through the use of novel machine learning algorithms, Sparrow can set interest rates at a low enough rate to 1) compensate the alumni who loaned money to Sparrow's fund and 2) allow the student to have a very manageable amount of interest to pay off on the loan.
+# Goals
+There are three important factors in underwriting credit: 
+1. Past credit history (which is what we don’t have for college students)
+2. Capacity ( this is the ability to pay back the loan that is received ) **
+3. Collateral (because these are college students they will not be putting up collateral because their loans are not this large) 
 
-# Our Model -- Sparrow Anghiari
-To predict the optimal interest rate, we first had to predict the expected recovery rate and probability of default. Since Sparrow Anghiari is a non-traditional model, we based the probability of default on a combination of factors including a student's major, college, and test scores. We also used LendingClub data from 2004 - 2017 to train the model. The models we trained were a gradient boosted random forest and neural net, which we optimized using hyperparameter tuning (GridSearch), dropout, and cross-validation. Once we achieved high enough accuracies, we deployed the models onto Google Cloud Platform, which we could then routinely call in the Sparrow Lending iOS app using a severless function. Finally, to actually see the app in action and get the user's banking and previous credit information, we used an API called Plaid, whose data we fed into the model to get an interest rate prediction.
+We are focusing on Capacity — their ability to pay back the loan 
+* This will depend on the individuals debt to income ratio
+* This is where behavior risk analysis will come into play // assessing the risk of the likeliness to default
+
+# Our Model 
+To predict capacity, we used data from WSJ and U.S. College Scorecard, which gave us access to data on an undergraduate's college, region of the U.S. the college is siutated in, their major, average student loan debt, and SAT/ACT scores. We used this data to train a linear regression and random forest model to predict an undergraduate's mean annual income 1 - 5 years out of college. The linear regressor failed miserably as it could not capture the nonlinearities present in the data. However, the random forest actually did quite well, achieving accuracies well over 90% after we binned the income into discrete ranges. After creating the models, we also tested the model rigorously from hand-drawn examples and found that engineering students at MIT and Stanford commanded the highest salaries after college, which is expected and communication majors from Black Hills State University had the lowest salaries. After scaling the salary by both the major taken and college, we came to a mean absolute error (MAE) of $3239, which is quite good since it means our model was only off by average of 3239 dollars for its predictions. To improve our model, the next steps we can take consist of removing redundant features using PCA, tuning our hyperparameters using GridSearch or a genetic algorithm, and stacking multiple models together to create an ensemble model.
 
